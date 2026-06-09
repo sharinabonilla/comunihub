@@ -1,0 +1,807 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hub PUCMM · Comunicación</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Syne:wght@700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --navy: #0A2463;
+    --navy-dark: #071A47;
+    --gold: #C9A84C;
+    --gold-light: #F0D080;
+    --gold-pale: #FDF6E3;
+    --cream: #FAFAF8;
+    --white: #FFFFFF;
+    --gray-100: #F4F4F2;
+    --gray-200: #E8E8E4;
+    --gray-400: #9A9A94;
+    --gray-700: #444440;
+    --text: #1A1A18;
+    --radius-sm: 10px;
+    --radius-md: 16px;
+    --radius-lg: 24px;
+    --radius-xl: 32px;
+    --shadow: 0 2px 12px rgba(10,36,99,0.08);
+    --shadow-md: 0 4px 24px rgba(10,36,99,0.12);
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Inter', sans-serif; background: var(--cream); color: var(--text); min-height: 100vh; }
+
+  /* NAV */
+  nav {
+    background: var(--navy-dark);
+    padding: 0 2rem;
+    display: flex; align-items: center; justify-content: space-between;
+    height: 60px; position: sticky; top: 0; z-index: 100;
+    border-bottom: 2px solid var(--gold);
+  }
+  .nav-brand { display: flex; align-items: center; gap: 10px; }
+  .nav-brand .badge {
+    background: var(--gold);
+    color: var(--navy-dark);
+    font-weight: 800; font-size: 13px;
+    padding: 4px 10px; border-radius: 6px;
+    letter-spacing: 0.5px;
+  }
+  .nav-brand span { color: white; font-size: 14px; font-weight: 500; opacity: 0.85; }
+  .nav-links { display: flex; gap: 4px; }
+  .nav-link {
+    color: rgba(255,255,255,0.7); font-size: 13px; font-weight: 500;
+    padding: 6px 12px; border-radius: 8px; cursor: pointer; border: none;
+    background: transparent; transition: all 0.2s;
+  }
+  .nav-link:hover, .nav-link.active { color: white; background: rgba(255,255,255,0.1); }
+  .nav-link.active { color: var(--gold); }
+
+  /* HERO */
+  .hero {
+    background: linear-gradient(135deg, var(--navy-dark) 0%, var(--navy) 60%, #1a3a7a 100%);
+    padding: 3.5rem 2rem 4rem;
+    text-align: center; position: relative; overflow: hidden;
+  }
+  .hero::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: radial-gradient(ellipse at 70% 50%, rgba(201,168,76,0.12) 0%, transparent 60%);
+  }
+  .hero-eyebrow {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: rgba(201,168,76,0.15); border: 1px solid rgba(201,168,76,0.3);
+    color: var(--gold-light); font-size: 12px; font-weight: 600; letter-spacing: 1px;
+    text-transform: uppercase; padding: 6px 14px; border-radius: 20px; margin-bottom: 1.25rem;
+  }
+  .hero h1 {
+    font-family: 'Syne', sans-serif; font-size: clamp(2rem, 5vw, 3.2rem);
+    font-weight: 800; color: white; line-height: 1.1; margin-bottom: 1rem;
+  }
+  .hero h1 span { color: var(--gold); }
+  .hero p { color: rgba(255,255,255,0.65); font-size: 1.05rem; max-width: 560px; margin: 0 auto 2rem; line-height: 1.6; }
+  .hero-search {
+    display: flex; gap: 8px; max-width: 520px; margin: 0 auto;
+    background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15);
+    border-radius: var(--radius-lg); padding: 6px;
+  }
+  .hero-search input {
+    flex: 1; background: transparent; border: none; outline: none;
+    color: white; font-size: 14px; padding: 8px 12px;
+    font-family: 'Inter', sans-serif;
+  }
+  .hero-search input::placeholder { color: rgba(255,255,255,0.4); }
+  .btn-search {
+    background: var(--gold); color: var(--navy-dark);
+    border: none; border-radius: var(--radius-md); padding: 10px 18px;
+    font-weight: 700; font-size: 13px; cursor: pointer; transition: 0.2s;
+    white-space: nowrap;
+  }
+  .btn-search:hover { background: var(--gold-light); }
+
+  /* STATS BAR */
+  .stats-bar {
+    background: var(--white); border-bottom: 1px solid var(--gray-200);
+    display: flex; justify-content: center; gap: 0; flex-wrap: wrap;
+  }
+  .stat-item {
+    padding: 1rem 2.5rem; text-align: center;
+    border-right: 1px solid var(--gray-200);
+  }
+  .stat-item:last-child { border-right: none; }
+  .stat-num { font-family: 'Syne', sans-serif; font-size: 1.5rem; font-weight: 800; color: var(--navy); }
+  .stat-label { font-size: 11px; color: var(--gray-400); font-weight: 500; text-transform: uppercase; letter-spacing: 0.5px; }
+
+  /* MAIN LAYOUT */
+  .main { max-width: 1100px; margin: 0 auto; padding: 2.5rem 1.5rem; }
+
+  /* SECTION TITLES */
+  .section-header { margin-bottom: 1.5rem; }
+  .section-header h2 { font-family: 'Syne', sans-serif; font-size: 1.4rem; font-weight: 800; color: var(--navy); }
+  .section-header p { font-size: 14px; color: var(--gray-400); margin-top: 4px; }
+  .tag {
+    display: inline-block; font-size: 11px; font-weight: 700; letter-spacing: 0.8px;
+    text-transform: uppercase; color: var(--gold); background: var(--gold-pale);
+    border: 1px solid rgba(201,168,76,0.25); padding: 3px 9px; border-radius: 6px; margin-bottom: 8px;
+  }
+
+  /* TABS */
+  .tabs { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 1.5rem; }
+  .tab {
+    padding: 8px 16px; border-radius: 10px; font-size: 13px; font-weight: 600;
+    cursor: pointer; border: 1.5px solid var(--gray-200); background: var(--white);
+    color: var(--gray-700); transition: all 0.2s;
+  }
+  .tab:hover { border-color: var(--navy); color: var(--navy); }
+  .tab.active { background: var(--navy); color: white; border-color: var(--navy); }
+
+  /* RESOURCE GRID */
+  .resource-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 14px; }
+
+  .resource-card {
+    background: var(--white); border: 1px solid var(--gray-200);
+    border-radius: var(--radius-md); padding: 1.2rem;
+    cursor: pointer; transition: all 0.2s; position: relative;
+    display: flex; flex-direction: column; gap: 10px;
+    text-decoration: none; color: inherit;
+  }
+  .resource-card:hover { border-color: var(--navy); transform: translateY(-2px); box-shadow: var(--shadow-md); }
+  .resource-card-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 8px; }
+  .resource-icon {
+    width: 42px; height: 42px; border-radius: 11px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 20px; flex-shrink: 0;
+  }
+  .resource-badge {
+    font-size: 10px; font-weight: 700; padding: 3px 8px; border-radius: 6px;
+    text-transform: uppercase; letter-spacing: 0.5px;
+  }
+  .badge-free { background: #E8F5E9; color: #2E7D32; }
+  .badge-pro { background: #FFF8E1; color: #F57F17; }
+  .badge-pucmm { background: #E8ECF5; color: var(--navy); }
+  .resource-card h3 { font-size: 14px; font-weight: 700; color: var(--text); line-height: 1.3; }
+  .resource-card p { font-size: 12px; color: var(--gray-400); line-height: 1.5; flex: 1; }
+  .resource-link {
+    font-size: 12px; font-weight: 600; color: var(--navy);
+    display: flex; align-items: center; gap: 4px; margin-top: auto;
+    text-decoration: none;
+  }
+  .resource-link:hover { color: var(--gold); }
+
+  /* COLOR VARIANTS FOR ICONS */
+  .ic-blue { background: #E8ECF5; }
+  .ic-gold { background: var(--gold-pale); }
+  .ic-green { background: #E8F5E9; }
+  .ic-purple { background: #F3E8FF; }
+  .ic-red { background: #FFE8E8; }
+  .ic-teal { background: #E0F7FA; }
+  .ic-orange { background: #FFF3E0; }
+
+  /* FAQ / CHATBOT */
+  .chat-section {
+    background: var(--white); border: 1px solid var(--gray-200);
+    border-radius: var(--radius-xl); overflow: hidden;
+    box-shadow: var(--shadow);
+  }
+  .chat-header {
+    background: var(--navy); padding: 1.25rem 1.5rem;
+    display: flex; align-items: center; gap: 12px;
+  }
+  .chat-avatar {
+    width: 38px; height: 38px; border-radius: 50%;
+    background: var(--gold); display: flex; align-items: center; justify-content: center;
+    font-size: 18px; flex-shrink: 0;
+  }
+  .chat-header-text h3 { color: white; font-size: 15px; font-weight: 700; }
+  .chat-header-text p { color: rgba(255,255,255,0.55); font-size: 12px; }
+  .chat-status { width: 8px; height: 8px; background: #4CAF50; border-radius: 50%; display: inline-block; margin-right: 4px; }
+  .chat-body {
+    height: 380px; overflow-y: auto; padding: 1.25rem;
+    display: flex; flex-direction: column; gap: 12px;
+    background: var(--gray-100);
+  }
+  .chat-msg { display: flex; gap: 10px; align-items: flex-end; }
+  .chat-msg.user { flex-direction: row-reverse; }
+  .msg-avatar {
+    width: 28px; height: 28px; border-radius: 50%; flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center; font-size: 13px;
+  }
+  .bot-av { background: var(--navy); }
+  .user-av { background: var(--gold); }
+  .msg-bubble {
+    max-width: 75%; padding: 10px 14px; border-radius: 16px;
+    font-size: 13.5px; line-height: 1.55;
+  }
+  .bot-bubble { background: white; color: var(--text); border-radius: 4px 16px 16px 16px; box-shadow: var(--shadow); }
+  .user-bubble { background: var(--navy); color: white; border-radius: 16px 4px 16px 16px; }
+  .msg-bubble a { color: var(--gold); }
+  .chat-quick { padding: 0.75rem 1.25rem; display: flex; gap: 8px; flex-wrap: wrap; background: var(--white); border-top: 1px solid var(--gray-200); }
+  .quick-btn {
+    background: var(--gray-100); border: 1px solid var(--gray-200);
+    color: var(--navy); font-size: 12px; font-weight: 600;
+    padding: 6px 12px; border-radius: 20px; cursor: pointer; transition: 0.2s;
+    white-space: nowrap;
+  }
+  .quick-btn:hover { background: var(--navy); color: white; border-color: var(--navy); }
+  .chat-input-area {
+    display: flex; gap: 8px; padding: 1rem 1.25rem;
+    background: var(--white); border-top: 1px solid var(--gray-200);
+  }
+  .chat-input {
+    flex: 1; border: 1.5px solid var(--gray-200); border-radius: 12px;
+    padding: 10px 14px; font-size: 13px; outline: none;
+    font-family: 'Inter', sans-serif; transition: 0.2s;
+  }
+  .chat-input:focus { border-color: var(--navy); }
+  .send-btn {
+    background: var(--navy); color: white; border: none;
+    border-radius: 12px; padding: 10px 16px; cursor: pointer;
+    font-size: 15px; transition: 0.2s;
+  }
+  .send-btn:hover { background: var(--navy-dark); }
+  .send-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+  .typing { display: flex; gap: 4px; align-items: center; padding: 8px 0; }
+  .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--gray-400); animation: bounce 1.2s infinite; }
+  .dot:nth-child(2) { animation-delay: 0.2s; }
+  .dot:nth-child(3) { animation-delay: 0.4s; }
+  @keyframes bounce { 0%,80%,100% { transform: scale(0.8); opacity: 0.5; } 40% { transform: scale(1.2); opacity: 1; } }
+
+  /* FEATURED SECTION */
+  .featured-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  @media (max-width: 640px) { .featured-grid { grid-template-columns: 1fr; } }
+  .featured-card {
+    background: var(--white); border: 1px solid var(--gray-200);
+    border-radius: var(--radius-md); padding: 1.4rem;
+    transition: 0.2s; text-decoration: none; color: inherit;
+    display: block;
+  }
+  .featured-card:hover { border-color: var(--gold); box-shadow: var(--shadow); }
+  .featured-card .fc-top { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
+  .fc-icon { width: 46px; height: 46px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 22px; }
+  .featured-card h3 { font-size: 15px; font-weight: 700; color: var(--navy); }
+  .featured-card p { font-size: 13px; color: var(--gray-400); line-height: 1.55; margin-bottom: 12px; }
+  .fc-tags { display: flex; flex-wrap: wrap; gap: 6px; }
+  .fc-tag {
+    font-size: 11px; font-weight: 600; padding: 3px 9px; border-radius: 6px;
+    background: var(--gray-100); color: var(--gray-700);
+  }
+
+  /* TOOLS HIGHLIGHT */
+  .tool-highlight {
+    background: linear-gradient(135deg, var(--navy-dark), var(--navy));
+    border-radius: var(--radius-xl); padding: 2.5rem;
+    display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 2rem;
+    margin-bottom: 2.5rem;
+  }
+  .tool-highlight h2 { color: white; font-family: 'Syne', sans-serif; font-size: 1.6rem; font-weight: 800; margin-bottom: 0.5rem; }
+  .tool-highlight p { color: rgba(255,255,255,0.6); font-size: 14px; line-height: 1.6; }
+  .tool-pills { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 1rem; }
+  .tool-pill {
+    background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2);
+    color: white; font-size: 12px; font-weight: 600; padding: 5px 12px;
+    border-radius: 20px;
+  }
+  .tool-highlight-num {
+    text-align: center;
+  }
+  .tool-highlight-num .big { font-family: 'Syne', sans-serif; font-size: 4rem; font-weight: 800; color: var(--gold); line-height: 1; }
+  .tool-highlight-num small { color: rgba(255,255,255,0.5); font-size: 12px; display: block; margin-top: 4px; }
+
+  /* DIVIDER */
+  .section-divider { height: 1px; background: var(--gray-200); margin: 2.5rem 0; }
+
+  /* SUBJECTS */
+  .subject-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 12px; }
+  .subject-card {
+    background: var(--white); border: 1px solid var(--gray-200);
+    border-radius: var(--radius-md); padding: 1.2rem;
+    cursor: pointer; transition: 0.2s;
+    display: flex; align-items: center; gap: 12px;
+  }
+  .subject-card:hover { border-color: var(--navy); box-shadow: var(--shadow); }
+  .sub-icon { width: 38px; height: 38px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0; }
+  .subject-card h4 { font-size: 13px; font-weight: 700; color: var(--text); line-height: 1.3; }
+  .subject-card span { font-size: 11px; color: var(--gray-400); }
+
+  /* SUGGESTIONS PANEL */
+  .suggestion-panel {
+    background: var(--gold-pale); border: 1px solid rgba(201,168,76,0.3);
+    border-radius: var(--radius-md); padding: 1.5rem; margin-bottom: 2rem;
+  }
+  .suggestion-panel h3 { font-size: 14px; font-weight: 700; color: var(--navy); margin-bottom: 1rem; display: flex; align-items: center; gap: 8px; }
+  .suggestion-list { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  @media (max-width: 600px) { .suggestion-list { grid-template-columns: 1fr; } }
+  .sug-item { display: flex; align-items: flex-start; gap: 10px; }
+  .sug-num { width: 22px; height: 22px; background: var(--navy); color: white; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 800; flex-shrink: 0; margin-top: 1px; }
+  .sug-item p { font-size: 13px; color: var(--gray-700); line-height: 1.4; }
+  .sug-item strong { color: var(--navy); font-weight: 700; }
+
+  /* FOOTER */
+  footer {
+    background: var(--navy-dark); color: rgba(255,255,255,0.5);
+    text-align: center; padding: 1.5rem; font-size: 12px; margin-top: 3rem;
+    border-top: 2px solid var(--gold);
+  }
+  footer strong { color: var(--gold); }
+
+  /* VIEWS */
+  .view { display: none; }
+  .view.active { display: block; }
+
+  /* MOODLE NOTICE */
+  .moodle-banner {
+    background: #E8ECF5; border-left: 4px solid var(--navy);
+    border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+    padding: 0.85rem 1.25rem; margin-bottom: 2rem;
+    display: flex; align-items: center; gap: 12px;
+    font-size: 13px; color: var(--navy);
+  }
+  .moodle-banner strong { font-weight: 700; }
+
+  /* RESPONSIVE */
+  @media (max-width: 700px) {
+    .tool-highlight { grid-template-columns: 1fr; }
+    .tool-highlight-num { display: none; }
+    nav { padding: 0 1rem; }
+    .nav-links { display: none; }
+    .stats-bar { gap: 0; }
+    .stat-item { padding: 0.75rem 1.25rem; }
+    .main { padding: 1.5rem 1rem; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-brand">
+    <div class="badge">PUCMM</div>
+    <span>Escuela de Comunicación · Hub Académico</span>
+  </div>
+  <div class="nav-links">
+    <button class="nav-link active" onclick="showView('inicio')">Inicio</button>
+    <button class="nav-link" onclick="showView('herramientas')">Herramientas IA</button>
+    <button class="nav-link" onclick="showView('biblioteca')">Biblioteca</button>
+    <button class="nav-link" onclick="showView('asignaturas')">Asignaturas</button>
+    <button class="nav-link" onclick="showView('chatbot')">💬 Asistente</button>
+  </div>
+</nav>
+
+<div class="hero">
+  <div class="hero-eyebrow">✦ Facultad de Ciencias Sociales, Humanidades y Artes</div>
+  <h1>Tu hub de recursos<br><span>académicos</span></h1>
+  <p>Herramientas de IA, bibliografía, repositorios y soporte para tus asignaturas — todo en un solo lugar.</p>
+  <div class="hero-search">
+    <input type="text" id="heroSearch" placeholder="Buscar recursos, herramientas, asignaturas..." onkeydown="if(event.key==='Enter') doSearch()">
+    <button class="btn-search" onclick="doSearch()">Buscar →</button>
+  </div>
+</div>
+
+<div class="stats-bar">
+  <div class="stat-item"><div class="stat-num">40+</div><div class="stat-label">Herramientas IA</div></div>
+  <div class="stat-item"><div class="stat-num">12</div><div class="stat-label">Asignaturas</div></div>
+  <div class="stat-item"><div class="stat-num">8</div><div class="stat-label">Bibliotecas</div></div>
+  <div class="stat-item"><div class="stat-num">24/7</div><div class="stat-label">Asistente IA</div></div>
+</div>
+
+<div class="main">
+
+<!-- INICIO -->
+<div class="view active" id="view-inicio">
+
+  <div class="moodle-banner">
+    📌 <div><strong>Integración Moodle / PVA:</strong> Este hub puede embeberse en el Campus Virtual PUCMM como iframe. Contacta a soporte técnico para activarlo en tu curso.</div>
+  </div>
+
+  <div class="tool-highlight">
+    <div>
+      <div class="tag">Destacado esta semana</div>
+      <h2>Inteligencia Artificial para Comunicadores</h2>
+      <p>Aprende a usar IA generativa, verificadores de hechos y herramientas de producción multimedia para potenciar tu carrera en comunicación.</p>
+      <div class="tool-pills">
+        <span class="tool-pill">ChatGPT</span>
+        <span class="tool-pill">NotebookLM</span>
+        <span class="tool-pill">Perplexity</span>
+        <span class="tool-pill">Runway ML</span>
+        <span class="tool-pill">ElevenLabs</span>
+      </div>
+    </div>
+    <div class="tool-highlight-num">
+      <div class="big">40+</div>
+      <small>recursos<br>disponibles</small>
+    </div>
+  </div>
+
+  <div class="section-header">
+    <div class="tag">Acceso rápido</div>
+    <h2>Recursos esenciales</h2>
+    <p>Los más usados por estudiantes de Comunicación</p>
+  </div>
+
+  <div class="featured-grid" style="margin-bottom:2rem;">
+    <a href="https://notebooklm.google.com" target="_blank" class="featured-card">
+      <div class="fc-top">
+        <div class="fc-icon ic-blue">🗒️</div>
+        <div><h3>Google NotebookLM</h3></div>
+      </div>
+      <p>Sube tus PDFs y libros de texto — NotebookLM genera resúmenes, responde preguntas y crea podcast-resúmenes de tus materiales.</p>
+      <div class="fc-tags"><span class="fc-tag">Gratis</span><span class="fc-tag">Estudio</span><span class="fc-tag">IA</span></div>
+    </a>
+    <a href="https://www.grammarly.com" target="_blank" class="featured-card">
+      <div class="fc-top">
+        <div class="fc-icon ic-green">✍️</div>
+        <div><h3>Grammarly</h3></div>
+      </div>
+      <p>Corrector avanzado de redacción académica en inglés y español. Detecta plagio, mejora tu estilo y coherencia en ensayos y trabajos.</p>
+      <div class="fc-tags"><span class="fc-tag">Freemium</span><span class="fc-tag">Redacción</span><span class="fc-tag">Académico</span></div>
+    </a>
+    <a href="https://campusvirtual.pucmm.edu.do/moodle/" target="_blank" class="featured-card">
+      <div class="fc-top">
+        <div class="fc-icon ic-blue">🎓</div>
+        <div><h3>Campus Virtual PVA</h3></div>
+      </div>
+      <p>Plataforma Moodle oficial de PUCMM. Accede a tus materiales de curso, entregas, foros y calificaciones.</p>
+      <div class="fc-tags"><span class="fc-tag">PUCMM</span><span class="fc-tag">Oficial</span></div>
+    </a>
+    <a href="https://www.scribd.com" target="_blank" class="featured-card">
+      <div class="fc-top">
+        <div class="fc-icon ic-purple">📚</div>
+        <div><h3>Scribd</h3></div>
+      </div>
+      <p>Biblioteca digital con millones de libros, artículos académicos, audiolibros y documentos de investigación en comunicación y ciencias sociales.</p>
+      <div class="fc-tags"><span class="fc-tag">Freemium</span><span class="fc-tag">Biblioteca</span></div>
+    </a>
+  </div>
+
+  <div class="section-divider"></div>
+
+  <div class="section-header">
+    <div class="tag">Usos & Ideas</div>
+    <h2>¿Cómo puede ayudarte este hub?</h2>
+    <p>Más allá de los recursos básicos</p>
+  </div>
+
+  <div class="suggestion-panel">
+    <h3>🚀 Usos sugeridos para estudiantes de Comunicación</h3>
+    <div class="suggestion-list">
+      <div class="sug-item"><div class="sug-num">1</div><p><strong>Chatbot de FAQs por asignatura:</strong> Pregunta sobre bibliografía, fechas de entrega y criterios de evaluación.</p></div>
+      <div class="sug-item"><div class="sug-num">2</div><p><strong>Generador de ideas para proyectos:</strong> Usa IA para brainstorm de campañas publicitarias o temas de tesis.</p></div>
+      <div class="sug-item"><div class="sug-num">3</div><p><strong>Resumen de lecturas largas:</strong> Sube artículos académicos y obtén síntesis en segundos con NotebookLM.</p></div>
+      <div class="sug-item"><div class="sug-num">4</div><p><strong>Verificación de fuentes periodísticas:</strong> Herramientas de fact-checking para trabajos de periodismo de investigación.</p></div>
+      <div class="sug-item"><div class="sug-num">5</div><p><strong>Producción multimedia asistida:</strong> IA para generar scripts, subtítulos automáticos y edición de video.</p></div>
+      <div class="sug-item"><div class="sug-num">6</div><p><strong>Traducción y localización:</strong> Deepl y herramientas de traducción para trabajos en inglés y francés.</p></div>
+      <div class="sug-item"><div class="sug-num">7</div><p><strong>Seguimiento de tendencias:</strong> Monitoreo de redes sociales y análisis de audiencias con herramientas digitales.</p></div>
+      <div class="sug-item"><div class="sug-num">8</div><p><strong>Creación de portfolios digitales:</strong> Plataformas para presentar tus trabajos y proyectos académicos.</p></div>
+    </div>
+  </div>
+
+</div>
+
+<!-- HERRAMIENTAS IA -->
+<div class="view" id="view-herramientas">
+  <div class="section-header">
+    <div class="tag">Inteligencia Artificial</div>
+    <h2>Herramientas de IA para estudiantes</h2>
+    <p>Selecciona una categoría para filtrar</p>
+  </div>
+
+  <div class="tabs" id="tabsIA">
+    <button class="tab active" onclick="filterIA('all', this)">Todas</button>
+    <button class="tab" onclick="filterIA('escritura', this)">Escritura</button>
+    <button class="tab" onclick="filterIA('investigacion', this)">Investigación</button>
+    <button class="tab" onclick="filterIA('multimedia', this)">Multimedia</button>
+    <button class="tab" onclick="filterIA('productividad', this)">Productividad</button>
+    <button class="tab" onclick="filterIA('comunicacion', this)">Comunicación</button>
+  </div>
+
+  <div class="resource-grid" id="gridIA"></div>
+</div>
+
+<!-- BIBLIOTECA -->
+<div class="view" id="view-biblioteca">
+  <div class="section-header">
+    <div class="tag">Recursos académicos</div>
+    <h2>Biblioteca digital & repositorios</h2>
+    <p>Fuentes para tus investigaciones y trabajos</p>
+  </div>
+
+  <div class="tabs" id="tabsLib">
+    <button class="tab active" onclick="filterLib('all', this)">Todos</button>
+    <button class="tab" onclick="filterLib('biblioteca', this)">Bibliotecas</button>
+    <button class="tab" onclick="filterLib('repositorio', this)">Repositorios</button>
+    <button class="tab" onclick="filterLib('revista', this)">Revistas académicas</button>
+    <button class="tab" onclick="filterLib('pucmm', this)">PUCMM</button>
+  </div>
+
+  <div class="resource-grid" id="gridLib"></div>
+</div>
+
+<!-- ASIGNATURAS -->
+<div class="view" id="view-asignaturas">
+  <div class="section-header">
+    <div class="tag">Escuela de Comunicación · PUCMM</div>
+    <h2>Recursos por asignatura</h2>
+    <p>Selecciona tu materia para ver recursos específicos</p>
+  </div>
+
+  <div class="subject-grid" id="subjectGrid"></div>
+
+  <div id="subjectDetail" style="margin-top:1.5rem; display:none;">
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:1.25rem;">
+      <button onclick="document.getElementById('subjectDetail').style.display='none'" style="background:var(--gray-100);border:1px solid var(--gray-200);border-radius:8px;padding:6px 12px;cursor:pointer;font-size:13px;font-weight:600;color:var(--navy);">← Volver</button>
+      <h3 id="subjectTitle" style="font-family:'Syne',sans-serif;font-size:1.2rem;font-weight:800;color:var(--navy);"></h3>
+    </div>
+    <div class="resource-grid" id="subjectResources"></div>
+  </div>
+</div>
+
+<!-- CHATBOT -->
+<div class="view" id="view-chatbot">
+  <div class="section-header">
+    <div class="tag">Asistente Académico IA</div>
+    <h2>Tu asistente de preguntas frecuentes</h2>
+    <p>Responde dudas sobre recursos, herramientas, asignaturas y más. Powered by Claude AI.</p>
+  </div>
+
+  <div class="chat-section">
+    <div class="chat-header">
+      <div class="chat-avatar">🎓</div>
+      <div class="chat-header-text">
+        <h3>Asistente PUCMM Comunicación</h3>
+        <p><span class="chat-status"></span>En línea · Responde en segundos</p>
+      </div>
+    </div>
+    <div class="chat-body" id="chatBody">
+      <div class="chat-msg">
+        <div class="msg-avatar bot-av">🎓</div>
+        <div class="msg-bubble bot-bubble">¡Hola! Soy tu asistente académico de la Escuela de Comunicación de PUCMM. 👋<br><br>Puedo ayudarte con recursos de estudio, herramientas de IA, bibliografía, dudas sobre tus asignaturas y mucho más. ¿Qué necesitas hoy?</div>
+      </div>
+    </div>
+    <div class="chat-quick" id="quickReplies">
+      <button class="quick-btn" onclick="sendQuick('¿Cuáles son las mejores herramientas de IA para periodismo?')">🤖 IA para periodismo</button>
+      <button class="quick-btn" onclick="sendQuick('¿Cómo accedo a la biblioteca digital de PUCMM?')">📚 Biblioteca PUCMM</button>
+      <button class="quick-btn" onclick="sendQuick('¿Qué es NotebookLM y cómo lo uso para estudiar?')">🗒️ NotebookLM</button>
+      <button class="quick-btn" onclick="sendQuick('¿Dónde encuentro artículos académicos gratuitos?')">🔍 Papers gratuitos</button>
+    </div>
+    <div class="chat-input-area">
+      <input type="text" class="chat-input" id="chatInput" placeholder="Escribe tu pregunta aquí..." onkeydown="if(event.key==='Enter') sendMessage()">
+      <button class="send-btn" id="sendBtn" onclick="sendMessage()">➤</button>
+    </div>
+  </div>
+
+  <div style="margin-top:1.5rem; padding:1rem 1.25rem; background:var(--gray-100); border-radius:var(--radius-md); font-size:12px; color:var(--gray-400);">
+    ⚠️ Este asistente usa IA y puede cometer errores. Verifica información crítica con tus profesores o fuentes oficiales de PUCMM.
+  </div>
+</div>
+
+</div><!-- /main -->
+
+<footer>
+  <p>Hub Académico · <strong>Escuela de Comunicación PUCMM</strong> · Facultad de Ciencias Sociales, Humanidades y Artes</p>
+  <p style="margin-top:4px;">Compatible con <strong>Moodle PVA</strong> · Para soporte: <a href="http://soporte.pucmm.edu.do/hc/es" style="color:var(--gold)">soporte.pucmm.edu.do</a></p>
+</footer>
+
+<script>
+const IA_RESOURCES = [
+  { name:"ChatGPT", desc:"Asistente general de escritura, investigación y brainstorm. Ideal para borradores y análisis.", icon:"🤖", cat:"escritura", badge:"pro", link:"https://chatgpt.com", ic:"ic-green" },
+  { name:"Claude", desc:"IA para análisis de textos largos, redacción académica y debates argumentativos con alta precisión.", icon:"✨", cat:"escritura", badge:"pro", link:"https://claude.ai", ic:"ic-purple" },
+  { name:"NotebookLM", desc:"Sube tus PDFs y obtén resúmenes, preguntas frecuentes y podcasts generados desde tus propios materiales.", icon:"🗒️", cat:"investigacion", badge:"free", link:"https://notebooklm.google.com", ic:"ic-blue" },
+  { name:"Perplexity AI", desc:"Motor de búsqueda con IA que cita fuentes en tiempo real. Perfecto para investigaciones académicas.", icon:"🔍", cat:"investigacion", badge:"pro", link:"https://perplexity.ai", ic:"ic-teal" },
+  { name:"Grammarly", desc:"Corrección gramatical avanzada, mejora de estilo y detección de plagio para trabajos académicos.", icon:"✍️", cat:"escritura", badge:"pro", link:"https://grammarly.com", ic:"ic-green" },
+  { name:"QuillBot", desc:"Parafraseo, resumen y mejora de textos académicos. Útil para reformular citas e ideas.", icon:"🪶", cat:"escritura", badge:"pro", link:"https://quillbot.com", ic:"ic-teal" },
+  { name:"Runway ML", desc:"Generación y edición de video con IA. Para proyectos audiovisuales y producción multimedia.", icon:"🎬", cat:"multimedia", badge:"pro", link:"https://runwayml.com", ic:"ic-red" },
+  { name:"ElevenLabs", desc:"Síntesis de voz realista en múltiples idiomas. Ideal para podcasts, locuciones y proyectos radiales.", icon:"🎙️", cat:"multimedia", badge:"pro", link:"https://elevenlabs.io", ic:"ic-orange" },
+  { name:"Canva AI", desc:"Diseño gráfico con inteligencia artificial. Genera presentaciones, infografías y piezas para redes sociales.", icon:"🎨", cat:"multimedia", badge:"pro", link:"https://canva.com", ic:"ic-purple" },
+  { name:"DeepL", desc:"Traducción de alta calidad para trabajos en inglés, francés y otros idiomas. Superior a Google Translate para textos académicos.", icon:"🌐", cat:"escritura", badge:"free", link:"https://deepl.com", ic:"ic-blue" },
+  { name:"Otter.ai", desc:"Transcripción automática de entrevistas y grabaciones. Indispensable para periodistas y comunicadores.", icon:"🎤", cat:"comunicacion", badge:"pro", link:"https://otter.ai", ic:"ic-teal" },
+  { name:"Descript", desc:"Edición de audio y video por texto. Graba podcasts y videos con corrección automática de errores.", icon:"✂️", cat:"multimedia", badge:"pro", link:"https://descript.com", ic:"ic-orange" },
+  { name:"Notion AI", desc:"Organiza notas, proyectos y bibliografía con asistencia de IA integrada. Excelente para grupos de trabajo.", icon:"📝", cat:"productividad", badge:"pro", link:"https://notion.so", ic:"ic-gray" },
+  { name:"Scite.ai", desc:"Verifica cómo se citan los artículos científicos entre sí. Esencial para evaluar la calidad de tus fuentes.", icon:"🔬", cat:"investigacion", badge:"pro", link:"https://scite.ai", ic:"ic-blue" },
+  { name:"Elicit", desc:"IA para revisión de literatura académica. Extrae datos de papers y organiza tu estado del arte.", icon:"📊", cat:"investigacion", badge:"free", link:"https://elicit.com", ic:"ic-green" },
+  { name:"Gamma", desc:"Generador de presentaciones y slides con IA desde un prompt o documento de texto.", icon:"📐", cat:"productividad", badge:"pro", link:"https://gamma.app", ic:"ic-purple" },
+  { name:"Buffer / Hootsuite", desc:"Planificación y análisis de redes sociales con IA. Para gestión de comunidades y social media.", icon:"📱", cat:"comunicacion", badge:"pro", link:"https://buffer.com", ic:"ic-teal" },
+  { name:"Adobe Firefly", desc:"Generación de imágenes y edición con IA integrada en las apps de Adobe para proyectos creativos.", icon:"🔥", cat:"multimedia", badge:"pro", link:"https://firefly.adobe.com", ic:"ic-red" },
+  { name:"Consensus", desc:"Busca consenso científico en papers académicos con IA. Responde preguntas con evidencia de investigación.", icon:"🎯", cat:"investigacion", badge:"free", link:"https://consensus.app", ic:"ic-green" },
+  { name:"Hemingway Editor", desc:"Mejora la claridad y legibilidad de tus textos periodísticos. Identifica oraciones complejas y voz pasiva.", icon:"📖", cat:"escritura", badge:"free", link:"https://hemingwayapp.com", ic:"ic-orange" },
+  { name:"Brandwatch", desc:"Escucha social y análisis de audiencias en tiempo real. Para estudios de opinión pública y medios.", icon:"📡", cat:"comunicacion", badge:"pro", link:"https://brandwatch.com", ic:"ic-purple" },
+  { name:"Suno AI", desc:"Genera música y jingles con IA. Para proyectos de radio, publicidad y producción audiovisual.", icon:"🎵", cat:"multimedia", badge:"free", link:"https://suno.com", ic:"ic-gold" },
+];
+
+const LIB_RESOURCES = [
+  { name:"PUCMM Biblioteca", desc:"Catálogo oficial de la Biblioteca Central PUCMM. Accede a libros, revistas y bases de datos institucionales.", icon:"🏛️", cat:"pucmm", badge:"pucmm", link:"https://pucmm.edu.do/recursos/Paginas/centro-recursos.aspx", ic:"ic-blue" },
+  { name:"Scribd", desc:"Millones de libros, artículos, presentaciones y audiolibros en ciencias sociales, comunicación y humanidades.", icon:"📚", cat:"biblioteca", badge:"pro", link:"https://scribd.com", ic:"ic-purple" },
+  { name:"Google Scholar", desc:"Motor de búsqueda académica gratuito. Encuentra artículos, tesis y citas académicas en todos los campos.", icon:"🎓", cat:"repositorio", badge:"free", link:"https://scholar.google.com", ic:"ic-blue" },
+  { name:"JSTOR", desc:"Repositorio de revistas académicas y libros. Especialmente fuerte en humanidades y ciencias sociales.", icon:"📰", cat:"revista", badge:"pro", link:"https://jstor.org", ic:"ic-teal" },
+  { name:"Redalyc", desc:"Red de revistas científicas latinoamericanas en acceso abierto. Comunicación, sociología y ciencias sociales.", icon:"🌎", cat:"revista", badge:"free", link:"https://redalyc.org", ic:"ic-green" },
+  { name:"Dialnet", desc:"Portal de difusión científica en español. Tesis, artículos y monografías de universidades hispanoparlantes.", icon:"🔍", cat:"repositorio", badge:"free", link:"https://dialnet.unirioja.es", ic:"ic-orange" },
+  { name:"Academia.edu", desc:"Red social académica para compartir y leer investigaciones. Millones de papers en comunicación y medios.", icon:"👥", cat:"repositorio", badge:"pro", link:"https://academia.edu", ic:"ic-teal" },
+  { name:"ResearchGate", desc:"Plataforma científica para acceder a papers, preprints y contactar directamente a los investigadores.", icon:"🔬", cat:"repositorio", badge:"free", link:"https://researchgate.net", ic:"ic-green" },
+  { name:"Latindex", desc:"Sistema regional de información sobre revistas científicas iberoamericanas. Directorio de revistas de comunicación.", icon:"📋", cat:"revista", badge:"free", link:"https://latindex.org", ic:"ic-blue" },
+  { name:"Repositorio PUCMM", desc:"Archivo institucional con tesis, trabajos finales y publicaciones de investigadores de la PUCMM.", icon:"🏫", cat:"pucmm", badge:"pucmm", link:"https://pucmm.edu.do", ic:"ic-blue" },
+  { name:"Open Library", desc:"Biblioteca digital con millones de libros gratuitos para leer o descargar. Proyecto de Internet Archive.", icon:"📖", cat:"biblioteca", badge:"free", link:"https://openlibrary.org", ic:"ic-orange" },
+  { name:"Scielo", desc:"Biblioteca electrónica de revistas científicas latinoamericanas y del Caribe en acceso abierto.", icon:"🌿", cat:"revista", badge:"free", link:"https://scielo.org", ic:"ic-green" },
+  { name:"ProQuest", desc:"Base de datos de tesis, dissertations y artículos académicos. Acceso institucional requerido.", icon:"🗄️", cat:"biblioteca", badge:"pucmm", link:"https://proquest.com", ic:"ic-purple" },
+  { name:"Zotero", desc:"Gestor de referencias bibliográficas gratuito. Organiza, cita y comparte tu bibliografía en cualquier estilo.", icon:"📌", cat:"repositorio", badge:"free", link:"https://zotero.org", ic:"ic-red" },
+];
+
+const SUBJECTS = [
+  { name:"Introducción a la Comunicación", icon:"📡", color:"ic-blue", resources: ["Google Scholar","NotebookLM","Scribd","Redalyc"] },
+  { name:"Teoría de la Comunicación", icon:"🧠", color:"ic-purple", resources: ["JSTOR","Redalyc","Google Scholar","Academia.edu"] },
+  { name:"Periodismo Digital", icon:"📱", color:"ic-teal", resources: ["Perplexity AI","Otter.ai","Hemingway Editor","Scite.ai"] },
+  { name:"Publicidad y Propaganda", icon:"📢", color:"ic-orange", resources: ["Canva AI","Buffer / Hootsuite","Brandwatch","Gamma"] },
+  { name:"Relaciones Públicas", icon:"🤝", color:"ic-green", resources: ["ChatGPT","Grammarly","Notion AI","Buffer / Hootsuite"] },
+  { name:"Producción Audiovisual", icon:"🎬", color:"ic-red", resources: ["Runway ML","Descript","Adobe Firefly","ElevenLabs"] },
+  { name:"Comunicación Organizacional", icon:"🏢", color:"ic-blue", resources: ["Notion AI","Grammarly","ChatGPT","Gamma"] },
+  { name:"Redacción Periodística", icon:"✍️", color:"ic-gold", resources: ["Grammarly","Hemingway Editor","QuillBot","DeepL"] },
+  { name:"Radio y Podcasting", icon:"🎙️", color:"ic-orange", resources: ["ElevenLabs","Descript","Otter.ai","Suno AI"] },
+  { name:"Investigación en Comunicación", icon:"🔍", color:"ic-teal", resources: ["Elicit","Scite.ai","Consensus","ResearchGate"] },
+  { name:"Comunicación Digital", icon:"💻", color:"ic-purple", resources: ["Buffer / Hootsuite","Canva AI","Notion AI","ChatGPT"] },
+  { name:"Ética en Comunicación", icon:"⚖️", color:"ic-green", resources: ["Dialnet","Redalyc","JSTOR","Google Scholar"] },
+];
+
+function renderCards(containerId, data) {
+  const el = document.getElementById(containerId);
+  el.innerHTML = data.map(r => `
+    <a href="${r.link}" target="_blank" class="resource-card">
+      <div class="resource-card-top">
+        <div class="resource-icon ${r.ic}">${r.icon}</div>
+        <span class="resource-badge badge-${r.badge}">${r.badge === 'pucmm' ? 'PUCMM' : r.badge === 'free' ? 'Gratis' : 'Premium'}</span>
+      </div>
+      <h3>${r.name}</h3>
+      <p>${r.desc}</p>
+      <span class="resource-link">Abrir recurso →</span>
+    </a>
+  `).join('');
+}
+
+function filterIA(cat, btn) {
+  document.querySelectorAll('#tabsIA .tab').forEach(t => t.classList.remove('active'));
+  btn.classList.add('active');
+  const filtered = cat === 'all' ? IA_RESOURCES : IA_RESOURCES.filter(r => r.cat === cat);
+  renderCards('gridIA', filtered);
+}
+
+function filterLib(cat, btn) {
+  document.querySelectorAll('#tabsLib .tab').forEach(t => t.classList.remove('active'));
+  btn.classList.add('active');
+  const filtered = cat === 'all' ? LIB_RESOURCES : LIB_RESOURCES.filter(r => r.cat === cat);
+  renderCards('gridLib', filtered);
+}
+
+function renderSubjects() {
+  const grid = document.getElementById('subjectGrid');
+  grid.innerHTML = SUBJECTS.map((s, i) => `
+    <div class="subject-card" onclick="openSubject(${i})">
+      <div class="sub-icon ${s.color}">${s.icon}</div>
+      <div>
+        <h4>${s.name}</h4>
+        <span>${s.resources.length} recursos</span>
+      </div>
+    </div>
+  `).join('');
+}
+
+function openSubject(i) {
+  const s = SUBJECTS[i];
+  document.getElementById('subjectTitle').textContent = s.name;
+  const allRes = [...IA_RESOURCES, ...LIB_RESOURCES];
+  const res = s.resources.map(name => allRes.find(r => r.name === name)).filter(Boolean);
+  renderCards('subjectResources', res);
+  document.getElementById('subjectDetail').style.display = 'block';
+  document.getElementById('subjectDetail').scrollIntoView({ behavior:'smooth' });
+}
+
+renderCards('gridIA', IA_RESOURCES);
+renderCards('gridLib', LIB_RESOURCES);
+renderSubjects();
+
+// VIEW SWITCHING
+function showView(view) {
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  document.getElementById('view-' + view).classList.add('active');
+  document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+  event.target.classList.add('active');
+  window.scrollTo({ top: 0, behavior:'smooth' });
+}
+
+// SEARCH
+function doSearch() {
+  const q = document.getElementById('heroSearch').value.toLowerCase().trim();
+  if (!q) return;
+  const allRes = [...IA_RESOURCES, ...LIB_RESOURCES];
+  const results = allRes.filter(r => r.name.toLowerCase().includes(q) || r.desc.toLowerCase().includes(q) || r.cat.toLowerCase().includes(q));
+  if (results.length === 0) {
+    alert('No se encontraron recursos para "' + q + '". Intenta con términos como: IA, periodismo, biblioteca, escritura...');
+    return;
+  }
+  showViewById('herramientas');
+  document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+  document.querySelectorAll('.nav-link')[1].classList.add('active');
+  renderCards('gridIA', results);
+  document.getElementById('gridLib').innerHTML = '';
+  document.querySelector('#view-herramientas .section-header h2').textContent = `Resultados para: "${q}"`;
+}
+
+function showViewById(view) {
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  document.getElementById('view-' + view).classList.add('active');
+}
+
+// CHATBOT
+const API_SYSTEM = `Eres el asistente académico oficial de la Escuela de Comunicación de la Pontificia Universidad Católica Madre y Maestra (PUCMM), Santiago, República Dominicana. 
+
+Ayudas a estudiantes universitarios de Comunicación con:
+- Recursos de estudio y herramientas de IA (NotebookLM, Grammarly, ChatGPT, Perplexity, Scribd, etc.)
+- Bibliografía y fuentes académicas (JSTOR, Redalyc, Google Scholar, Dialnet, etc.)
+- Dudas sobre asignaturas de la Escuela de Comunicación
+- Uso del Campus Virtual PVA (Moodle de PUCMM)
+- Técnicas de estudio, citación (APA, MLA) y redacción académica
+- Herramientas para periodismo digital, producción audiovisual y comunicación organizacional
+
+Responde siempre en español, de forma amigable, concisa y útil. Cuando menciones herramientas, incluye para qué sirven específicamente. Máximo 200 palabras por respuesta. Si no sabes algo específico de la PUCMM, sé honesto y recomienda contactar a soporte oficial.`;
+
+let chatHistory = [];
+
+async function sendMessage() {
+  const input = document.getElementById('chatInput');
+  const msg = input.value.trim();
+  if (!msg) return;
+  input.value = '';
+  addMessage(msg, 'user');
+  chatHistory.push({ role:'user', content: msg });
+  document.getElementById('sendBtn').disabled = true;
+  document.getElementById('quickReplies').style.display = 'none';
+  addTyping();
+  try {
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method:'POST',
+      headers:{ 'Content-Type':'application/json' },
+      body: JSON.stringify({
+        model:'claude-sonnet-4-20250514',
+        max_tokens:1000,
+        system: API_SYSTEM,
+        messages: chatHistory
+      })
+    });
+    const data = await res.json();
+    removeTyping();
+    const reply = data.content?.[0]?.text || 'Ocurrió un error. Por favor intenta de nuevo.';
+    addMessage(reply, 'bot');
+    chatHistory.push({ role:'assistant', content: reply });
+  } catch(e) {
+    removeTyping();
+    addMessage('Hubo un error de conexión. Por favor intenta de nuevo en unos momentos.', 'bot');
+  }
+  document.getElementById('sendBtn').disabled = false;
+}
+
+function sendQuick(text) {
+  document.getElementById('chatInput').value = text;
+  sendMessage();
+}
+
+function addMessage(text, who) {
+  const body = document.getElementById('chatBody');
+  const div = document.createElement('div');
+  div.className = 'chat-msg ' + (who === 'user' ? 'user' : '');
+  div.innerHTML = `
+    <div class="msg-avatar ${who === 'bot' ? 'bot-av' : 'user-av'}">${who === 'bot' ? '🎓' : '👤'}</div>
+    <div class="msg-bubble ${who === 'bot' ? 'bot-bubble' : 'user-bubble'}">${text.replace(/\n/g,'<br>')}</div>
+  `;
+  body.appendChild(div);
+  body.scrollTop = body.scrollHeight;
+}
+
+function addTyping() {
+  const body = document.getElementById('chatBody');
+  const div = document.createElement('div');
+  div.className = 'chat-msg'; div.id = 'typing-indicator';
+  div.innerHTML = `<div class="msg-avatar bot-av">🎓</div><div class="msg-bubble bot-bubble"><div class="typing"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div></div>`;
+  body.appendChild(div);
+  body.scrollTop = body.scrollHeight;
+}
+
+function removeTyping() {
+  const el = document.getElementById('typing-indicator');
+  if (el) el.remove();
+}
+</script>
+</body>
+</html>
